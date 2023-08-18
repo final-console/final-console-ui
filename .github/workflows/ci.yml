@@ -1,0 +1,61 @@
+# This workflow will build a Java project with Maven
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: ci
+
+on:
+  push:
+    branches: [ ]
+  pull_request:
+    branches: [ ]
+  release:
+    types:
+      - published
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show GitHub Context
+        run: echo "${{ toJson(github) }}"
+      - name: 设置环境变量
+        uses: final-actions/set-up-env@main
+        with:
+          docker: true
+          docker-registry: ${{ secrets.DOCKER_REGISTRY }}
+      - name: 检出存储库
+        uses: actions/checkout@v2
+      - name: 设置Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14  # 将其更改为所需的Node.js版本
+      - name: 安装依赖
+        run: npm install
+      - name: 构建
+        run: npm run build
+      - name: 构建Docker镜像
+        uses: final-actions/docker@main
+        with:
+          registry: ${{ secrets.DOCKER_REGISTRY }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          app-name: ${{ env.APP_NAME }}
+          version: ${{ env.VERSION }}
+          image: ${{ env.IMAGE }}
+      - name: 部署
+        uses: final-actions/kuboard-cicd@main
+        with:
+          host: ${{ secrets.KUBOARD_HOST }}
+          username: ${{ secrets.KUBOARD_USERNAME }}
+          access-key: ${{ secrets.KUBOARD_ACCESS_KEY }}
+          cluster: default
+          namespace: ifinal
+          app-name: ${{ env.APP_NAME }}
+          image: ${{ env.IMAGE }}
+          version: ${{ env.VERSION }}
+
+
+
+
+
+
