@@ -7,7 +7,6 @@ COPY dist/ /usr/share/nginx/html
 # 可选：如果您有自定义的Nginx配置文件，您可以将其复制到镜像中
 # COPY nginx.conf /etc/nginx/nginx.conf
 COPY nginx/conf.d/ /etc/nginx/conf.d
-COPY nginx/certs/ /etc/nginx/certs
 
 # 暴露Nginx的默认HTTP端口（通常为80）
 EXPOSE 80
