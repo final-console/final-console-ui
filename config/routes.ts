@@ -23,6 +23,37 @@ export default [
     ],
   },
   {
+    path: '/dashboard',
+    name: 'dashboard',
+    icon: 'smile',
+    component: './Owner',
+  },
+  {
+    path: '/:owner',
+    component: './Owner',
+    parentKeys: ['/dashboard'],
+    menuRender: false,
+    headerTheme: 'dark',
+  },
+  {
+    path: '/:owner/:product',
+    component: './Product',
+    parentKeys: ['/dashboard'],
+    menuRender: false,
+    headerTheme: 'dark',
+  },
+  {
+    path: '/:owner/:product/:project',
+    component: './Project',
+    parentKeys: ['/dashboard'],
+    menuRender: false,
+    headerTheme: 'dark',
+  },
+  {
+    path: '/:owner/:product/:project/:repository/:service',
+    component: './Service',
+  },
+  {
     path: '/welcome',
     name: 'welcome',
     icon: 'smile',
