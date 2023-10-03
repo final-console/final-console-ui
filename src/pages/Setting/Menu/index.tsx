@@ -24,10 +24,9 @@ export default () => {
     const menuChildrenFormRef = useRef<ProFormInstance<SecurityMenuQuery>>();
     const [menuChildrenSecurityQuery, setMenuChildrenSecurityQuery] = useState<SecurityMenuQuery>({parentId: -1})
 
-    const [parentId, setParentId] = useState<number>(-1);
 
     const tabs = [
-        {key: 'menus', tab: '子菜单', children: <MenuChildren parentId={parentId}
+        {key: 'menus', tab: '子菜单', children: <MenuChildren parentId={-1}
                                                               formRef={menuChildrenFormRef}
                                                               actionRef={menuChildrenActionRef}
                                                               securityMenuQuery={menuChildrenSecurityQuery}
@@ -40,6 +39,7 @@ export default () => {
 
     return (
         <ProLayout
+            title="菜单设置"
             logo={"https://th.bing.com/th/id/R.c3ec64ad2cc5dbe33e74b212dc1b655b?rik=2iSUEjTG8e%2balA&riu=http%3a%2f%2fpic.616pic.com%2fys_b_img%2f00%2f15%2f34%2fMgf5DOge2w.jpg&ehk=YJ4I33FCI9wOYNRi%2bx%2fqT%2fvMy5cTmmq9hN5yX%2bwsEsc%3d&risl=&pid=ImgRaw&r=0&sres=1&sresct=1"}
             collapsedButtonRender={false}
             fixSiderbar={true}
@@ -63,10 +63,15 @@ export default () => {
                 <a
                     onClick={() => {
                         console.log(JSON.stringify(item));
+                        let parentId = parseInt(item.key || '-1');
+
+                        if(parentId !== -1) {
+                            parentId = Math.abs(parentId);
+                        }
+
                         setPathname(item.path || '/');
-                        setParentId(parseInt(item.key || '-1'));
                         menuChildrenActionRef.current?.reload();
-                        setMenuChildrenSecurityQuery({parentId: parseInt(item.key || '-1')});
+                        setMenuChildrenSecurityQuery({parentId: parentId});
                         // menuChildrenFormRef.current?.setFieldValue('parentId', parseInt(item.key || '-1'));
                     }}
                 >
@@ -75,7 +80,6 @@ export default () => {
             )}
         >
             <PageContainer
-                title={"菜单管理"}
                 extra={[
                     <Button key="1" type="primary">
                         主操作
