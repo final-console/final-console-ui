@@ -1,2 +1,3 @@
-# final-nezha-ui
-哪吒项目管理
+# final-admin-ui
+
+Final管理台（UI）

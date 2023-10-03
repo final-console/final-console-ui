@@ -23,64 +23,24 @@ export default [
     ],
   },
   {
-    path: '/dashboard',
-    name: 'dashboard',
-    icon: 'smile',
-    component: './Owner',
-  },
-  {
-    path: '/:owner',
-    component: './Owner',
-    parentKeys: ['/dashboard'],
-    menuRender: false,
-    headerTheme: 'dark',
-  },
-  {
-    path: '/:owner/:product',
-    component: './Product',
-    parentKeys: ['/dashboard'],
-    menuRender: false,
-    headerTheme: 'dark',
-  },
-  {
-    path: '/:owner/:product/:project',
-    component: './Project',
-    parentKeys: ['/dashboard'],
-    menuRender: false,
-    headerTheme: 'dark',
-  },
-  {
-    path: '/:owner/:product/:project/:repository/:service',
-    component: './Service',
-  },
-  {
     path: '/welcome',
     name: 'welcome',
     icon: 'smile',
     component: './Welcome',
   },
   {
-    path: '/admin',
-    name: 'admin',
-    icon: 'crown',
-    access: 'canAdmin',
+    path: '/setting',
+    name: 'setting',
+    icon: 'smile',
     routes: [
       {
-        path: '/admin',
-        redirect: '/admin/sub-page',
-      },
-      {
-        path: '/admin/sub-page',
-        name: 'sub-page',
-        component: './Admin',
-      },
-    ],
-  },
-  {
-    name: 'list.table-list',
-    icon: 'table',
-    path: '/list',
-    component: './TableList',
+        path: '/setting/menu',
+        name: 'menu',
+        component: './Setting/Menu',
+        menuRender: false,
+        layout: false,
+      }
+    ]
   },
   {
     path: '/',

@@ -87,7 +87,12 @@ const Welcome: React.FC = () => {
   const { token } = theme.useToken();
   const { initialState } = useModel('@@initialState');
   return (
-    <PageContainer>
+    <PageContainer
+        token={{
+            paddingBlockPageContainerContent: 24,
+            paddingInlinePageContainerContent: 40
+        }}
+    >
       <Card
         style={{
           borderRadius: 8,
