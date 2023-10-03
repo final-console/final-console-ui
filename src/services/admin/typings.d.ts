@@ -20,4 +20,5 @@ export type SecurityMenu = {
 export type SecurityMenuQuery = {
   name?: string;
   path?: string;
+  parentId?: number;
 } & Query;

@@ -11,6 +11,7 @@ import {currentUser as queryCurrentUser} from './services/ant-design-pro/api';
 import React from 'react';
 import {AvatarDropdown, AvatarName} from './components/RightContent/AvatarDropdown';
 import {MenuDataItem} from "@ant-design/pro-layout";
+import {adminMenus} from "@/services/admin/AdminService";
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -21,10 +22,12 @@ const IconMap = {
 };
 
 const loopMenuItem = (menus: any[]): MenuDataItem[] =>
-    menus.map(({icon, routes, ...item}) => ({
+    menus.map(({icon, routes, menuRender, ...item}) => ({
         ...item,
         icon: icon && IconMap[icon as string],
         children: routes && loopMenuItem(routes),
+        menuRender: menuRender === false ? false : undefined,
+        layout: menuRender === false ? false : 'side',
     }));
 
 /**
@@ -67,7 +70,6 @@ export async function getInitialState(): Promise<{
 }
 
 
-
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => {
     return {
@@ -81,6 +83,16 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
         },
         waterMarkProps: {
             content: initialState?.currentUser?.name,
+        },
+        menu: {
+            params: {
+                userId: initialState?.currentUser?.userid,
+            },
+            request: async () => {
+                // initialState.currentUser 中包含了所有用户信息
+                const menuData = await adminMenus();
+                return loopMenuItem(menuData.data);
+            },
         },
         footerRender: () => <Footer/>,
         onPageChange: () => {

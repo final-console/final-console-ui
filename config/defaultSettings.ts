@@ -17,7 +17,7 @@ const Settings: ProLayoutProps & {
     colorWeak: false,
     title: 'Final Admin',
     pwa: true,
-    logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
+    logo: 'https://prium.github.io/falcon/v3.15.0/assets/img/icons/spot-illustrations/falcon.png',
     iconfontUrl: '',
     token: {
         // 参见ts声明，demo 见文档，通过token 修改样式
