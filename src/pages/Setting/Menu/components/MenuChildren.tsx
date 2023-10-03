@@ -3,7 +3,7 @@ import {DragSortTable} from '@ant-design/pro-components';
 import {Button, message} from 'antd';
 import {SecurityMenu, SecurityMenuQuery} from "@/services/admin/typings";
 import {PlusCircleFilled} from "@ant-design/icons";
-import React, {createRef} from "react";
+import React, {useRef} from "react";
 import {DomainService} from "@/services/admin/DomainService";
 
 
@@ -39,20 +39,20 @@ const columns: ProColumns[] = [
 ];
 
 export type MenuChildrenProps = {
-    layoutActionRef: ActionType;
+    onDragSortEnd: () => void;
 }
 
 
-export default ({onDragSortEnd}) => {
+const MenuChildren: React.FC<MenuChildrenProps> = (props) => {
 
     const securityMenuService = new DomainService<SecurityMenu, SecurityMenuQuery>('security-menus');
-    const actionRef = createRef();
+    const actionRef = useRef<ActionType>();
 
     const handleDragSortEnd = (newDataSource: SecurityMenu[]) => {
         console.log('排序后的数据', newDataSource);
-        securityMenuService.sort(newDataSource).then(res => {
+        securityMenuService.sort(newDataSource).then(() => {
             actionRef.current?.reload();
-            onDragSortEnd();
+            props.onDragSortEnd();
             message.success('修改列表排序成功');
         });
     };
@@ -65,7 +65,7 @@ export default ({onDragSortEnd}) => {
             pagination={false}
             dragSortKey="sort"
             actionRef={actionRef}
-            request={async (params, sort, filter) => await securityMenuService.list(params, sort)}
+            request={async (params, sort) => await securityMenuService.list(params, sort)}
             onDragSortEnd={handleDragSortEnd}
             search={{
                 filterType: 'light',
@@ -80,3 +80,5 @@ export default ({onDragSortEnd}) => {
         />
     );
 };
+
+export default MenuChildren;
