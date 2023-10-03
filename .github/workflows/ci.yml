@@ -42,14 +42,6 @@ jobs:
           app-name: ${{ env.APP_NAME }}
           version: ${{ env.VERSION }}
           image: ${{ env.IMAGE }}
-      - name: Deploy to gh-pages
-        run: |
-          mv dist/ docs
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git add .
-          git commit -m "Deploy to gh-pages"
-          git push -f origin gh-pages
       - name: 部署
         uses: final-actions/kuboard-cicd@main
         with:
