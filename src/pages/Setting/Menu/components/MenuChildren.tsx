@@ -2,61 +2,22 @@ import type {ActionType, ProColumns} from '@ant-design/pro-components';
 import {DragSortTable} from '@ant-design/pro-components';
 import {Button, message} from 'antd';
 import {SecurityMenu, SecurityMenuQuery} from "@/services/admin/typings";
-import {PlusCircleFilled} from "@ant-design/icons";
-import React from "react";
+import {createFromIconfontCN, PlusCircleFilled} from "@ant-design/icons";
+import React, {useEffect, useState} from "react";
 import {DomainService} from "@/services/admin/DomainService";
 import {BetaSchemaForm} from "@ant-design/pro-form";
-
-import { createFromIconfontCN } from '@ant-design/icons';
 import Settings from "../../../../../config/defaultSettings";
+import {uiColumns} from "@/services/admin/UIService";
 
 const Icon = createFromIconfontCN({scriptUrl: Settings.iconfontUrl});
 
-const columns: ProColumns[] = [
-    {
-        title: '排序',
-        dataIndex: 'sort',
-        width: 60,
-        className: 'drag-visible',
-        hideInForm: true,
-    },
-    {
-        title: '#',
-        dataIndex: 'index',
-        valueType: 'indexBorder',
-    },
-    {
-        title: '编码',
-        dataIndex: 'code',
-    },
-    {
-        title: '名称',
-        dataIndex: 'name',
-        render: (_, record) => {
-            return (<a onClick={() => {
-                console.log(record);
-            }}><Icon type={'icon-' + record.icon}/> {record.name}</a>);
-        }
-    },
-    {
-        title: '路径',
-        dataIndex: 'path',
-    },{
-        title: '路径',
-        dataIndex: 'icon',
-        render: (_, record) => {
-            return (<Icon type={'icon-' + record.icon}/>)
-        }
-    },
-    {
-        title: '排序',
-        dataIndex: 'sortValue',
-        sorter: true,
-        hideInTable: true,
-        hideInSearch: true,
-        defaultSortOrder: 'ascend',
-    },
-];
+const iconRender = (_, record) => {
+    return (<Icon type={'icon-' + record.icon}/>);
+}
+
+const columnRenders = {
+    icon: iconRender,
+};
 
 export type MenuChildrenProps = {
     parentId: number;
@@ -69,9 +30,18 @@ export type MenuChildrenProps = {
 
 const MenuChildren: React.FC<MenuChildrenProps> = (props) => {
 
-
-
     const securityMenuService = new DomainService<SecurityMenu, SecurityMenuQuery>('security-menus');
+
+    const [columns, setColumns] = useState<ProColumns[]>([]);
+
+    useEffect(() => {
+        uiColumns('security-menus').then((res) => {
+            setColumns(res.data.map(({valueType, ...item}) => ({
+                ...item,
+                render: valueType === 'icon' ? columnRenders[valueType] : undefined,
+            })));
+        });
+    }, [])
 
 
     const handleDragSortEnd = (newDataSource: SecurityMenu[]) => {

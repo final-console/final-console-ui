@@ -22,3 +22,12 @@ export type SecurityMenuQuery = {
   path?: string;
   parentId?: number;
 } & Query;
+
+export type ResourceColumn = {
+    title: string;
+    dataIndex: string[];
+} & Entity;
+
+export type ResourceColumnQuery = {
+  resource: string;
+} & Query;
