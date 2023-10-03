@@ -1,23 +1,18 @@
 import {MenuDataItem, ProLayout} from "@ant-design/pro-layout";
 import {getSecurityMenus} from "@/services/admin/security";
 import React, {useRef, useState} from "react";
-import {HeartOutlined, SmileOutlined} from "@ant-design/icons";
 import {Button} from "antd";
 import {ActionType, PageContainer, ProFormInstance} from "@ant-design/pro-components";
 import MenuChildren from "./components/MenuChildren";
 import MenuAuthorities from "./components/MenuAuthorities";
 import {SecurityMenuQuery} from "@/services/admin/typings";
+import Settings from "../../../../config/defaultSettings";
 
-
-const IconMap = {
-    smile: <SmileOutlined/>,
-    heart: <HeartOutlined/>,
-};
 
 const loopMenuItem = (menus: any[]): MenuDataItem[] =>
     menus.map(({icon, routes, ...item}) => ({
         ...item,
-        icon: icon && IconMap[icon as string],
+        icon: icon && ('icon-' + icon),
         children: routes && loopMenuItem(routes),
     }));
 
@@ -45,11 +40,11 @@ export default () => {
 
     return (
         <ProLayout
-            title={"菜单设置"}
             logo={"https://th.bing.com/th/id/R.c3ec64ad2cc5dbe33e74b212dc1b655b?rik=2iSUEjTG8e%2balA&riu=http%3a%2f%2fpic.616pic.com%2fys_b_img%2f00%2f15%2f34%2fMgf5DOge2w.jpg&ehk=YJ4I33FCI9wOYNRi%2bx%2fqT%2fvMy5cTmmq9hN5yX%2bwsEsc%3d&risl=&pid=ImgRaw&r=0&sres=1&sresct=1"}
             collapsedButtonRender={false}
             fixSiderbar={true}
             actionRef={layoutActionRef}
+            iconfontUrl={Settings.iconfontUrl}
             onMenuHeaderClick={() => history.back()}
             menuProps={{
                 style: {}

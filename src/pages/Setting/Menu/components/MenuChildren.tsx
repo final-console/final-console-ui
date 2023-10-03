@@ -7,6 +7,10 @@ import React from "react";
 import {DomainService} from "@/services/admin/DomainService";
 import {BetaSchemaForm} from "@ant-design/pro-form";
 
+import { createFromIconfontCN } from '@ant-design/icons';
+import Settings from "../../../../../config/defaultSettings";
+
+const Icon = createFromIconfontCN({scriptUrl: Settings.iconfontUrl});
 
 const columns: ProColumns[] = [
     {
@@ -28,11 +32,21 @@ const columns: ProColumns[] = [
     {
         title: '名称',
         dataIndex: 'name',
-        className: 'drag-visible',
+        render: (_, record) => {
+            return (<a onClick={() => {
+                console.log(record);
+            }}><Icon type={'icon-' + record.icon}/> {record.name}</a>);
+        }
     },
     {
         title: '路径',
         dataIndex: 'path',
+    },{
+        title: '路径',
+        dataIndex: 'icon',
+        render: (_, record) => {
+            return (<Icon type={'icon-' + record.icon}/>)
+        }
     },
     {
         title: '排序',
@@ -72,7 +86,7 @@ const MenuChildren: React.FC<MenuChildrenProps> = (props) => {
     return (
         <>
             <DragSortTable<SecurityMenu, SecurityMenuQuery>
-                headerTitle="拖拽排序(默认把手)"
+                headerTitle="子菜单"
                 columns={columns}
                 rowKey="id"
                 pagination={false}
@@ -82,9 +96,7 @@ const MenuChildren: React.FC<MenuChildrenProps> = (props) => {
                 params={props.securityMenuQuery}
                 request={async (params, sort) => await securityMenuService.list(params, sort)}
                 onDragSortEnd={handleDragSortEnd}
-                search={{
-                    filterType: 'light',
-                }}
+                search={false}
                 toolbar={{
                     actions: [
                         <BetaSchemaForm

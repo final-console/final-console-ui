@@ -24,10 +24,10 @@ const IconMap = {
 const loopMenuItem = (menus: any[]): MenuDataItem[] =>
     menus.map(({icon, routes, menuRender, ...item}) => ({
         ...item,
-        icon: icon && IconMap[icon as string],
+        icon: icon && ('icon-' + icon),
         children: routes && loopMenuItem(routes),
         menuRender: menuRender === false ? false : undefined,
-        layout: menuRender === false ? false : 'side',
+        layout: menuRender === false ? false : 'mix',
     }));
 
 /**
