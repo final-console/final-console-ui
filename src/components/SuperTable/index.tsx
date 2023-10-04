@@ -1,6 +1,6 @@
-import type {DragTableProps, ParamsType, ProColumns, ProTableProps} from '@ant-design/pro-components';
-import {DragSortTable, EditableProTable, ProTable} from '@ant-design/pro-components';
-import {message} from 'antd';
+import type {ActionType, DragTableProps, ParamsType, ProColumns, ProTableProps} from '@ant-design/pro-components';
+import {DragSortTable, EditableProTable, ProDescriptions, ProTable, TableDropdown} from '@ant-design/pro-components';
+import {Drawer, message} from 'antd';
 import {Menu} from "@/services/admin/typings";
 import {createFromIconfontCN} from "@ant-design/icons";
 import React, {useEffect, useState} from "react";
@@ -10,13 +10,6 @@ import Settings from "../../../config/defaultSettings";
 
 const Icon = createFromIconfontCN({scriptUrl: Settings.iconfontUrl});
 
-const iconRender = (_, record) => {
-    return (<Icon type={'icon-' + record.icon}/>);
-}
-
-const columnRenders = {
-    icon: iconRender,
-};
 
 export enum SupperTableType {
     Table, DragSort, Editable
@@ -28,7 +21,7 @@ export type SupperTableProps<
 > = {
     resource: string;
     tableType?: SupperTableType;
-    onRowActionClick?: (row: T) => void;
+    onRowActionClick?: (key: string, row: T, action: React.Ref<ActionType>) => void;
     onDragSortEnd?: () => void;
 } & ProTableProps<T, Q> & DragTableProps<T, Q>
 
@@ -40,14 +33,83 @@ function SupperTable<
     let {
         resource,
         actionRef,
+        onRowActionClick,
         ...otherProps
     } = props;
+
+    const [viewDrawerVisible, setViewDrawerVisible] = useState<boolean>(false);
+    const [rowRecord, setRowRecord] = useState<T | undefined>(undefined);
+
+    const iconRender = (_, record) => {
+        return (<Icon type={'icon-' + record.icon}/>);
+    }
+
+    const actionRender = (_, record, action) => {
+
+        let strings = [{
+            key: 'edit',
+            name: '编辑',
+            type: 'danger'
+        }, {
+            key: 'view',
+            name: '查看',
+            type: 'default'
+        }, {
+            key: 'delete',
+            name: '删除',
+            type: 'danger'
+        }];
+
+        let actions = [];
+
+        let links = strings.length >= 2 ? strings.slice(0, 2) : strings;
+
+        // 生成操作链接
+        links.forEach((item) => {
+            actions.push(<a
+                key={item.key}
+                onClick={() => {
+
+                    if (item.key === 'view') {
+                        setRowRecord(record);
+                        setViewDrawerVisible(true);
+                    }
+
+                    if (onRowActionClick) {
+                        onRowActionClick(item.key, record, action);
+                    }
+                }}
+            >
+                {item.name}
+            </a>)
+        });
+
+        if (strings.length > 2) {
+
+
+            actions.push(<TableDropdown
+                key="actionGroup"
+                onSelect={() => action?.reload()}
+                menus={strings.slice(2)}
+            />)
+        }
+
+
+        console.log("action", record)
+        return actions;
+    }
+
+    const columnRenders = {
+        icon: iconRender,
+        option: actionRender
+    };
 
 
     const resourceService = new DomainService(resource);
     const uiService = new UIService(resource);
 
     const [columns, setColumns] = useState<ProColumns[]>([]);
+
 
     const onDragSortEnd = (newDataSource: Menu[]) => {
         console.log('排序后的数据', newDataSource);
@@ -75,7 +137,6 @@ function SupperTable<
             }));
 
             setColumns(_columns);
-
             // 首次请求
             actionRef?.current?.reload();
 
@@ -107,6 +168,19 @@ function SupperTable<
                 && <EditableProTable {...props} columns={columns}
                                      request={request}/>
             }
+            <Drawer
+                open={viewDrawerVisible}
+                width={'40%'}
+                onClose={() => setViewDrawerVisible(false)}
+
+            >
+                <ProDescriptions<T>
+                    columns={columns}
+                    dataSource={rowRecord}
+                >
+
+                </ProDescriptions>
+            </Drawer>
         </>
     );
 };

@@ -1,7 +1,8 @@
-import {ActionType, PageContainer} from "@ant-design/pro-components";
-import SupperTable, {SupperTableType} from "@/components/SuperTable";
+import {ActionType, ParamsType} from "@ant-design/pro-components";
+import {SupperTableType} from "@/components/SuperTable";
 import {useRef} from "react";
 import {useParams} from "umi";
+import PageTable from "@/components/PageTable";
 
 export default () => {
 
@@ -10,17 +11,15 @@ export default () => {
     const actionRef = useRef<ActionType>();
 
     return (
-        <PageContainer
-            token={{
-                paddingBlockPageContainerContent: 24,
-                paddingInlinePageContainerContent: 40
-            }}
-        >
-            <SupperTable resource={resources}
-                         tableType={SupperTableType.Table}
-                         actionRef={actionRef}
-                         manualRequest={false}/>
-        </PageContainer>
+        <PageTable<Record<string, any>, ParamsType> resource={resources} tableProps={{
+            actionRef: actionRef,
+            tableType: SupperTableType.DragSort,
+            onDragSortEnd: () => {
+                actionRef?.current?.reload();
+            },
+            onRowActionClick: (key, row, action) => {
+            }
+        }}/>
     )
 }
 
