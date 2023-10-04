@@ -32,26 +32,7 @@ const MenuChildren: React.FC<MenuChildrenProps> = (props) => {
 
     const menuService = new DomainService<Menu, MenuQuery>('menus');
     const uiService = new UIService('menu');
-
-    const [dragColumn] = useState<ProColumns>({
-        title: '排序',
-        dataIndex: 'sort',
-        width: '60',
-    });
-
     const [columns, setColumns] = useState<ProColumns[]>([]);
-
-    useEffect(() => {
-        uiService.columns().then((res) => {
-            let _columns: ProColumns[] = res.data.map(({valueType, ...item}) => ({
-                ...item,
-                render: valueType === 'icon' ? columnRenders[valueType] : undefined,
-            }));
-            _columns.push(dragColumn);
-            setColumns(_columns);
-        });
-    }, [])
-
 
     const handleDragSortEnd = (newDataSource: Menu[]) => {
         console.log('排序后的数据', newDataSource);
@@ -61,6 +42,18 @@ const MenuChildren: React.FC<MenuChildrenProps> = (props) => {
             message.success('修改列表排序成功');
         });
     };
+
+    useEffect(() => {
+        uiService.columns().then((res) => {
+            let _columns: ProColumns[] = res.data.map(({valueType, ...item}) => ({
+                ...item,
+                valueType: valueType,
+                render: valueType === 'icon' ? columnRenders[valueType] : undefined,
+            }));
+            setColumns(_columns);
+        });
+    }, [])
+
 
     return (
         <>
@@ -80,7 +73,6 @@ const MenuChildren: React.FC<MenuChildrenProps> = (props) => {
                     actions: [
                         <BetaSchemaForm
                             key={'add'}
-
                             trigger={<Button type="primary"><PlusCircleFilled/>点击我</Button>}
                             layoutType={'ModalForm'}
                             onFinish={async (values) => {

@@ -1,10 +1,9 @@
 import React, {useRef, useState} from "react";
 import {ActionType, PageContainer, ProFormInstance} from "@ant-design/pro-components";
-import MenuChildren from "./components/MenuChildren";
-import MenuAuthorities from "./components/MenuAuthorities";
 import {MenuQuery} from "@/services/admin/typings";
 import Settings from "../../../../config/defaultSettings";
 import AdminLayout from "@/layouts/AdminLayout";
+import SupperTable, {SupperTableType} from "@/components/SuperTable/SupperTable";
 
 export default () => {
 
@@ -15,13 +14,26 @@ export default () => {
 
     const tabs = [
         {
-            key: 'menus', tab: '子菜单', children: <MenuChildren parentId={-1}
-                                                                 formRef={menuChildrenFormRef}
-                                                                 actionRef={menuChildrenActionRef}
-                                                                 securityMenuQuery={menuChildrenSecurityQuery}
-                                                                 onDragSortEnd={() => layoutActionRef.current?.reload()}/>
+            key: 'menus',
+            tab: '子菜单',
+            children: <SupperTable
+                parentId={-1}
+                resource='menus'
+                tableType={SupperTableType.DragSort}
+                search={false}
+                formRef={menuChildrenFormRef}
+                actionRef={menuChildrenActionRef}
+                securityMenuQuery={menuChildrenSecurityQuery}
+                onDragSortEnd={() => layoutActionRef.current?.reload()}/>
         },
-        {key: 'authorities', tab: '权限', children: <MenuAuthorities/>},
+        {
+            key: 'authorities', tab: '权限',
+            children: <SupperTable
+                resource='authorities'
+                tableType={SupperTableType.DragSort}
+                search={false}
+            />
+        },
     ];
 
     const [tab, setTab] = useState<string>('menus');
