@@ -7,7 +7,9 @@ export type Entity = {
 }
 
 export type Query = {
-    orders: string;
+    current?: number;
+    pageSize?: number;
+    orders?: string;
 }
 
 

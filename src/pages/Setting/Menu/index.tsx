@@ -10,7 +10,7 @@ export default () => {
     const layoutActionRef = useRef<ActionType>();
     const menuChildrenActionRef = useRef<ActionType>();
     const menuChildrenFormRef = useRef<ProFormInstance<MenuQuery>>();
-    const [menuChildrenSecurityQuery, setMenuChildrenSecurityQuery] = useState<MenuQuery>({parentId: -1})
+    const [menuQuery, setMenuQuery] = useState({parentId: -1})
 
     const tabs = [
         {
@@ -23,7 +23,7 @@ export default () => {
                 search={false}
                 formRef={menuChildrenFormRef}
                 actionRef={menuChildrenActionRef}
-                securityMenuQuery={menuChildrenSecurityQuery}
+                params={menuQuery}
                 onDragSortEnd={() => layoutActionRef.current?.reload()}/>
         },
         {
@@ -58,7 +58,7 @@ export default () => {
                 }
 
                 menuChildrenActionRef.current?.reload();
-                setMenuChildrenSecurityQuery({parentId: parentId});
+                setMenuQuery({parentId: parentId});
                 // menuChildrenFormRef.current?.setFieldValue('parentId', parseInt(item.key || '-1'));
             }}
         >

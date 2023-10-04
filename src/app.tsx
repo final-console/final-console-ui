@@ -1,10 +1,10 @@
 import Footer from '@/components/Footer';
 import {Question, SelectLang, Setting} from '@/components/RightContent';
-import {HeartOutlined, LinkOutlined, SmileOutlined} from '@ant-design/icons';
+import {LinkOutlined} from '@ant-design/icons';
 import type {Settings as LayoutSettings} from '@ant-design/pro-components';
 import {SettingDrawer} from '@ant-design/pro-components';
 import type {RunTimeLayoutConfig} from '@umijs/max';
-import {history, Link} from '@umijs/max';
+import {history, Link, RequestConfig} from '@umijs/max';
 import defaultSettings from '../config/defaultSettings';
 import {errorConfig} from './requestErrorConfig';
 import {currentUser as queryCurrentUser} from './services/ant-design-pro/api';
@@ -16,10 +16,6 @@ import {adminMenus} from "@/services/admin/AdminService";
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 
-const IconMap = {
-    smile: <SmileOutlined/>,
-    heart: <HeartOutlined/>,
-};
 
 const loopMenuItem = (menus: any[]): MenuDataItem[] =>
     menus.map(({icon, routes, menuRender, ...item}) => ({
@@ -159,6 +155,28 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
     };
 };
 
+
+const pageArgumentsInterceptor = (url: string, options: RequestConfig) => {
+    const obj: any = options;
+    console.log(JSON.stringify(obj));
+    const {params} = obj;
+    if (params) {
+        if (params.current) {
+            params.page = params.current;
+            delete params.current;
+        }
+        if (params.pageSize) {
+            params.size = params.pageSize;
+            delete params.pageSize;
+        }
+    }
+
+    return {
+        url: url,
+        options: obj,
+    };
+};
+
 /**
  * @name request 配置，可以配置错误处理
  * 它基于 axios 和 ahooks 的 useRequest 提供了一套统一的网络请求和错误处理方案。
@@ -166,4 +184,7 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
  */
 export const request = {
     ...errorConfig,
+    credentials: 'include',
+    // 新增自动添加AccessToken的请求前拦截器
+    requestInterceptors: [pageArgumentsInterceptor],
 };

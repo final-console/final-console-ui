@@ -49,13 +49,15 @@ export class DomainService<T extends Entity, Q extends Query> {
     }
 
     async sort(data: T[], options?: { [key: string]: any }) {
-        const sort = {};
+
         for (let i = 0; i < data.length; i++) {
-            sort[data[i].id] = i;
+            data[i].sortValue = i + 1;
         }
+
+
         return request(`/api/${this.resource}/sort`, {
             method: 'PATCH',
-            data: sort,
+            data: data,
             ...(options || {}),
         });
     }

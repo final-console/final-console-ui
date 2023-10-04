@@ -19,7 +19,7 @@ export class UIService {
         }));
     }
 
-    menus(params?: Query, options?: { [key: string]: any }) {
+    menus(params: Query, options?: { [key: string]: any }) {
         console.log("options:" + JSON.stringify(options));
         if (options) {
             const column: string = Object.keys(options)[0];
@@ -54,6 +54,7 @@ export class UIService {
             method: 'GET',
             params: {
                 ...params,
+                sorter: options
             },
             ...(options || {}),
         });

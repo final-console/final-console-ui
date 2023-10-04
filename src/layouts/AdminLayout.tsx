@@ -43,7 +43,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = (props) => {
             menu={{
                 request: async () => {
                     // 查询所有菜单
-                    const securityMenus = await uiService.menus()
+                    const securityMenus = await uiService.menus({})
                     return loopMenuItem(securityMenus.data);
                 },
             }}

@@ -1,4 +1,4 @@
-import type {ActionType, DragTableProps, ProColumns, ProTableProps} from '@ant-design/pro-components';
+import type {DragTableProps, ProColumns, ProTableProps} from '@ant-design/pro-components';
 import {DragSortTable, EditableProTable, ProTable} from '@ant-design/pro-components';
 import {message} from 'antd';
 import {Menu} from "@/services/admin/typings";
@@ -25,8 +25,6 @@ export enum SupperTableType {
 export type SupperTableProps<T, Q> = {
     resource: string;
     tableType?: SupperTableType;
-    formRef: React.MutableRefObject<Q>;
-    actionRef: React.MutableRefObject<ActionType>;
     onRowActionClick?: (row: T) => void;
     onDragSortEnd?: () => void;
 } & ProTableProps<T, Q> & DragTableProps<T, Q>
