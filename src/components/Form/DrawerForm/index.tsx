@@ -21,9 +21,10 @@ export type CustomizeResizeType = {
 export type DrawerFormProps<
     T = Record<string, any>,
     U = Record<string, any>,
-> = Omit<FormProps, 'onFinish' | 'title'> &
-    CommonFormProps<T, U> & {
+> = Omit<FormProps, 'onFinish' | 'title' | 'formRef'> &
+    CommonFormProps<T, U> & DrawerProps & {
     columns: ProColumns[];
+    placement?: DrawerProps['placement'];
     /**
      * 接收任意值，返回 真值 会关掉这个抽屉
      *
@@ -299,6 +300,7 @@ function DrawerForm<T = Record<string, any>, U = Record<string, any>>({
             <Drawer
                 title={title}
                 width={drawerWidth}
+                placement={rest.placement}
                 {...drawerProps}
                 {...drawerOpenProps}
                 afterOpenChange={(e) => {

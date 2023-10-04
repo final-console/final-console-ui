@@ -1,6 +1,6 @@
 import type {ActionType, DragTableProps, ParamsType, ProColumns, ProTableProps} from '@ant-design/pro-components';
 import {DragSortTable, EditableProTable, ProDescriptions, ProTable, TableDropdown} from '@ant-design/pro-components';
-import {Drawer, message, Modal} from 'antd';
+import {Button, Drawer, message, Modal} from 'antd';
 import {Menu} from "@/services/admin/typings";
 import {createFromIconfontCN, ExclamationCircleFilled} from "@ant-design/icons";
 import React, {useEffect, useState} from "react";
@@ -41,11 +41,11 @@ function SupperTable<
     const domainService = new DomainService<T, Q>(resource);
 
 
+    const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
     const [viewDrawerVisible, setViewDrawerVisible] = useState<boolean>(false);
     const [editDrawerVisible, setEditDrawerVisible] = useState<boolean>(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
     const [rowRecord, setRowRecord] = useState<T | undefined>(undefined);
-
 
     const handleRowActionClick = (key: string, record: T, action: React.Ref<ActionType>) => {
         if (key === 'view') {
@@ -182,13 +182,47 @@ function SupperTable<
 
     const request = async (params: any, sort: any, filter: any) => await domainService.list(params, sort);
 
+    const toolbar = {
+        actions: [
+            <DrawerForm<T>
+                key="create"
+                title={'新建'}
+                width={'60%'}
+                placement={'left'}
+                trigger={
+                    <Button key="create" type={"primary"}>
+                        新建
+                    </Button>
+                }
+                onFinish={async (values) => {
+                    console.log(values);
+                    domainService.create(values).then(() => {
+                        setCreateModalVisible(false);
+                        actionRef?.current?.reload();
+                        message.success('创建成功');
+                    });
+                }}
+
+                onClose={() => setCreateModalVisible(false)}
+                drawerProps={{
+                    // 重置表单
+                    destroyOnClose: true,
+                }}
+                columns={columns}
+            />
+        ]
+    }
+
     return (
         <>
             {
                 props.tableType === SupperTableType.Table
                 && <ProTable {...props}
                              manualRequest={true}
-                             columns={columns} request={request}/>
+                             columns={columns} request={request}
+
+                             toolbar={toolbar}
+                />
             }
             {
                 props.tableType === SupperTableType.DragSort
@@ -199,12 +233,16 @@ function SupperTable<
                                   dragSortKey="sort"
                                   params={props.params}
                                   request={request}
+                                  toolbar={toolbar}
                 />}
             {
                 props.tableType === SupperTableType.Editable
                 && <EditableProTable {...props} columns={columns}
+                                     toolbar={toolbar}
                                      request={request}/>
             }
+
+
             <Drawer
                 title={'查看'}
                 open={viewDrawerVisible}
@@ -235,7 +273,6 @@ function SupperTable<
                         actionRef?.current?.reload();
                         message.success('修改成功');
                     });
-
 
                 }}
                 columns={columns}

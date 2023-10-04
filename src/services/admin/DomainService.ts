@@ -75,4 +75,10 @@ export class DomainService<T extends Entity, Q extends Query> {
         });
     }
 
+    create(data: T) {
+        return request<Result<number>>(`/api/${this.resource}`, {
+            method: 'POST',
+            data: data,
+        });
+    }
 }
