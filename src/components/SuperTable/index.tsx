@@ -1,8 +1,8 @@
 import type {ActionType, DragTableProps, ParamsType, ProColumns, ProTableProps} from '@ant-design/pro-components';
 import {DragSortTable, EditableProTable, ProDescriptions, ProTable, TableDropdown} from '@ant-design/pro-components';
-import {Drawer, message} from 'antd';
+import {Drawer, message, Modal} from 'antd';
 import {Menu} from "@/services/admin/typings";
-import {createFromIconfontCN} from "@ant-design/icons";
+import {createFromIconfontCN, ExclamationCircleFilled} from "@ant-design/icons";
 import React, {useEffect, useState} from "react";
 import {DomainService} from "@/services/admin/DomainService";
 import {UIService} from "@/services/admin/UIService";
@@ -43,7 +43,48 @@ function SupperTable<
 
     const [viewDrawerVisible, setViewDrawerVisible] = useState<boolean>(false);
     const [editDrawerVisible, setEditDrawerVisible] = useState<boolean>(false);
+    const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
     const [rowRecord, setRowRecord] = useState<T | undefined>(undefined);
+
+
+    const handleRowActionClick = (key: string, record: T, action: React.Ref<ActionType>) => {
+        if (key === 'view') {
+            // 查询详情
+            domainService.findById(record.id).then((res) => {
+                setRowRecord(res.data);
+                setViewDrawerVisible(true);
+            });
+        } else if (key === 'edit') {
+            // 查询详情
+            domainService.findById(record.id).then((res) => {
+                setRowRecord(res.data);
+                setEditDrawerVisible(true);
+            });
+        } else if (key === 'delete') {
+            // 删除
+            const {confirm} = Modal;
+
+            confirm({
+                title: '您确认要删除该条目吗？',
+                icon: <ExclamationCircleFilled/>,
+                content: '删除后将无法恢复',
+                onOk() {
+
+                    domainService.deleteById(record.id).then(() => {
+                        actionRef?.current?.reload();
+                        message.success('删除成功');
+                    });
+                },
+                onCancel() {
+                    console.log('Cancel');
+                },
+            });
+        }
+
+        if (onRowActionClick) {
+            onRowActionClick(key, record, action);
+        }
+    }
 
     const iconRender = (_, record) => {
         return (<Icon type={'icon-' + record.icon}/>);
@@ -74,24 +115,8 @@ function SupperTable<
             actions.push(<a
                 key={item.key}
                 onClick={() => {
+                    handleRowActionClick(item.key, record, action);
 
-                    if (item.key === 'view') {
-                        // 查询详情
-                        domainService.findById(record.id).then((res) => {
-                            setRowRecord(res.data);
-                            setViewDrawerVisible(true);
-                        });
-                    } else if (item.key === 'edit') {
-                        // 查询详情
-                        domainService.findById(record.id).then((res) => {
-                            setRowRecord(res.data);
-                            setEditDrawerVisible(true);
-                        });
-                    }
-
-                    if (onRowActionClick) {
-                        onRowActionClick(item.key, record, action);
-                    }
                 }}
             >
                 {item.name}
@@ -100,10 +125,9 @@ function SupperTable<
 
         if (strings.length > 2) {
 
-
             actions.push(<TableDropdown
                 key="actionGroup"
-                onSelect={() => action?.reload()}
+                onSelect={(key) => handleRowActionClick(key, record, action)}
                 menus={strings.slice(2)}
             />)
         }
@@ -216,10 +240,16 @@ function SupperTable<
                 }}
                 columns={columns}
                 initialValues={rowRecord}
+            />
 
-            >
 
-            </DrawerForm>
+            <Modal
+                title={'删除'}
+                open={deleteModalVisible}
+                onOk={() => {
+                }}
+                onCancel={() => setDeleteModalVisible(false)}
+            />
 
 
         </>

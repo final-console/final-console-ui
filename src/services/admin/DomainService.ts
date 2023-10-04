@@ -69,4 +69,10 @@ export class DomainService<T extends Entity, Q extends Query> {
         });
     }
 
+    deleteById(id: number | string) {
+        return request<Result<number>>(`/api/${this.resource}/${id}`, {
+            method: 'DELETE',
+        });
+    }
+
 }
