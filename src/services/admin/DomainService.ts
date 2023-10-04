@@ -42,9 +42,16 @@ export class DomainService<T extends Entity, Q extends Query> {
      * 根据ID查询详情
      * @param id id
      */
-    findById(id: number | string) {
+    async findById(id: number | string) {
         return request<Result<T>>(`/api/${this.resource}/${id}`, {
             method: 'GET',
+        });
+    }
+
+    updateById(id: number | string, data: T) {
+        return request<Result<number>>(`/api/${this.resource}/${id}`, {
+            method: 'PATCH',
+            data: data,
         });
     }
 

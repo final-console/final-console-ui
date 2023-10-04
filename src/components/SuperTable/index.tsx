@@ -7,6 +7,7 @@ import React, {useEffect, useState} from "react";
 import {DomainService} from "@/services/admin/DomainService";
 import {UIService} from "@/services/admin/UIService";
 import Settings from "../../../config/defaultSettings";
+import {DrawerForm} from "@/components/Form/DrawerForm";
 
 const Icon = createFromIconfontCN({scriptUrl: Settings.iconfontUrl});
 
@@ -37,7 +38,11 @@ function SupperTable<
         ...otherProps
     } = props;
 
+    const domainService = new DomainService<T, Q>(resource);
+
+
     const [viewDrawerVisible, setViewDrawerVisible] = useState<boolean>(false);
+    const [editDrawerVisible, setEditDrawerVisible] = useState<boolean>(false);
     const [rowRecord, setRowRecord] = useState<T | undefined>(undefined);
 
     const iconRender = (_, record) => {
@@ -71,8 +76,17 @@ function SupperTable<
                 onClick={() => {
 
                     if (item.key === 'view') {
-                        setRowRecord(record);
-                        setViewDrawerVisible(true);
+                        // 查询详情
+                        domainService.findById(record.id).then((res) => {
+                            setRowRecord(res.data);
+                            setViewDrawerVisible(true);
+                        });
+                    } else if (item.key === 'edit') {
+                        // 查询详情
+                        domainService.findById(record.id).then((res) => {
+                            setRowRecord(res.data);
+                            setEditDrawerVisible(true);
+                        });
                     }
 
                     if (onRowActionClick) {
@@ -105,7 +119,6 @@ function SupperTable<
     };
 
 
-    const resourceService = new DomainService(resource);
     const uiService = new UIService(resource);
 
     const [columns, setColumns] = useState<ProColumns[]>([]);
@@ -113,7 +126,7 @@ function SupperTable<
 
     const onDragSortEnd = (newDataSource: Menu[]) => {
         console.log('排序后的数据', newDataSource);
-        resourceService.sort(newDataSource).then(() => {
+        domainService.sort(newDataSource).then(() => {
             console.log("actionRef", actionRef);
             actionRef?.current?.reload();
             props?.onDragSortEnd();
@@ -143,7 +156,7 @@ function SupperTable<
         });
     }, [resource])
 
-    const request = async (params: any, sort: any, filter: any) => await resourceService.list(params, sort);
+    const request = async (params: any, sort: any, filter: any) => await domainService.list(params, sort);
 
     return (
         <>
@@ -169,6 +182,7 @@ function SupperTable<
                                      request={request}/>
             }
             <Drawer
+                title={'查看'}
                 open={viewDrawerVisible}
                 width={'40%'}
                 onClose={() => setViewDrawerVisible(false)}
@@ -181,8 +195,36 @@ function SupperTable<
 
                 </ProDescriptions>
             </Drawer>
+
+            <DrawerForm<T>
+                title={'编辑'}
+                open={editDrawerVisible}
+                width={'40%'}
+                onOpenChange={(open) => {
+                    setEditDrawerVisible(open)
+                }}
+                onFinish={async (values) => {
+                    console.log(values);
+                    setEditDrawerVisible(false);
+
+                    domainService.updateById(rowRecord?.id, values).then(() => {
+                        actionRef?.current?.reload();
+                        message.success('修改成功');
+                    });
+
+
+                }}
+                columns={columns}
+                initialValues={rowRecord}
+
+            >
+
+            </DrawerForm>
+
+
         </>
-    );
+    )
+        ;
 };
 
 export default SupperTable;
