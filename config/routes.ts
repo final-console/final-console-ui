@@ -41,7 +41,19 @@ export default [
                 layout: false,
             }
         ]
-    }, {
+    },
+    {
+        path: '/security',
+        name: 'security',
+        icon: 'smile',
+        routes: [
+            {
+                path: '/security/:resources',
+                component: './Admin/Resource',
+            },
+        ]
+    },
+    {
         path: '/data',
         name: 'data',
         icon: 'smile',

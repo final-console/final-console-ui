@@ -61,6 +61,9 @@ function SupperTable<
 
 
     useEffect(() => {
+
+        console.log("resource发生变化了。。。", resource)
+
         uiService.columns().then((res) => {
             console.log(JSON.stringify(res.data));
 
@@ -77,7 +80,7 @@ function SupperTable<
             actionRef?.current?.reload();
 
         });
-    }, [])
+    }, [resource])
 
     const request = async (params: any, sort: any, filter: any) => await resourceService.list(params, sort);
 
@@ -85,7 +88,9 @@ function SupperTable<
         <>
             {
                 props.tableType === SupperTableType.Table
-                && <ProTable {...props} columns={columns} request={request}/>
+                && <ProTable {...props}
+                             manualRequest={true}
+                             columns={columns} request={request}/>
             }
             {
                 props.tableType === SupperTableType.DragSort
