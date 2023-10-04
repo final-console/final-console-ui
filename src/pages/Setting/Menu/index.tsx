@@ -3,14 +3,14 @@ import {ActionType, PageContainer, ProFormInstance} from "@ant-design/pro-compon
 import {MenuQuery} from "@/services/admin/typings";
 import Settings from "../../../../config/defaultSettings";
 import AdminLayout from "@/layouts/AdminLayout";
-import SupperTable, {SupperTableType} from "@/components/SuperTable/SupperTable";
+import SupperTable, {SupperTableType} from "@/components/SuperTable";
 
 export default () => {
 
     const layoutActionRef = useRef<ActionType>();
     const menuChildrenActionRef = useRef<ActionType>();
     const menuChildrenFormRef = useRef<ProFormInstance<MenuQuery>>();
-    const [menuQuery, setMenuQuery] = useState({parentId: -1})
+    const [menuQuery, setMenuQuery] = useState({parentId: -1, orders: 'sortValue asc'});
 
     const tabs = [
         {
@@ -21,6 +21,8 @@ export default () => {
                 resource='menus'
                 tableType={SupperTableType.DragSort}
                 search={false}
+                pagination={false}
+                manualRequest={true}
                 formRef={menuChildrenFormRef}
                 actionRef={menuChildrenActionRef}
                 params={menuQuery}

@@ -1,4 +1,4 @@
-import type {DragTableProps, ProColumns, ProTableProps} from '@ant-design/pro-components';
+import type {DragTableProps, ParamsType, ProColumns, ProTableProps} from '@ant-design/pro-components';
 import {DragSortTable, EditableProTable, ProTable} from '@ant-design/pro-components';
 import {message} from 'antd';
 import {Menu} from "@/services/admin/typings";
@@ -22,42 +22,60 @@ export enum SupperTableType {
     Table, DragSort, Editable
 }
 
-export type SupperTableProps<T, Q> = {
+export type SupperTableProps<
+    T extends Record<string, any>,
+    Q extends ParamsType = ParamsType,
+> = {
     resource: string;
     tableType?: SupperTableType;
     onRowActionClick?: (row: T) => void;
     onDragSortEnd?: () => void;
 } & ProTableProps<T, Q> & DragTableProps<T, Q>
 
-const SupperTable: React.FC<SupperTableProps> = (props) => {
+function SupperTable<
+    T extends Record<string, any>,
+    Q extends ParamsType = ParamsType,
+>(props: SupperTableProps<T, Q>) {
 
-    const resourceService = new DomainService(props.resource);
-    const uiService = new UIService(props.resource);
+    let {
+        resource,
+        actionRef,
+        ...otherProps
+    } = props;
+
+
+    const resourceService = new DomainService(resource);
+    const uiService = new UIService(resource);
 
     const [columns, setColumns] = useState<ProColumns[]>([]);
 
     const onDragSortEnd = (newDataSource: Menu[]) => {
         console.log('排序后的数据', newDataSource);
         resourceService.sort(newDataSource).then(() => {
-            props?.actionRef?.current?.reload();
+            console.log("actionRef", actionRef);
+            actionRef?.current?.reload();
             props?.onDragSortEnd();
             message.success('修改列表排序成功');
         });
     };
 
+
     useEffect(() => {
         uiService.columns().then((res) => {
-
             console.log(JSON.stringify(res.data));
 
-            let _columns: ProColumns[] = res.data.map(({valueType, ...item}) => ({
+            let _columns: ProColumns[] = res.data.map(({valueType, defaultSortOrder, ...item}) => ({
                 ...item,
                 valueType: valueType,
+                defaultSortOrder: defaultSortOrder?.toLowerCase(),
                 render: columnRenders[valueType],
             }));
 
-
             setColumns(_columns);
+
+            // 首次请求
+            actionRef?.current?.reload();
+
         });
     }, [])
 
@@ -77,7 +95,7 @@ const SupperTable: React.FC<SupperTableProps> = (props) => {
                                   columns={columns}
                                   dragSortKey="sort"
                                   params={props.params}
-                                  request={async (params, sort) => await resourceService.list(params, sort)}
+                                  request={request}
                 />}
             {
                 props.tableType === SupperTableType.Editable
