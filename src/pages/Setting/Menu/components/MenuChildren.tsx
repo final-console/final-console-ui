@@ -1,13 +1,13 @@
 import type {ActionType, ProColumns} from '@ant-design/pro-components';
 import {DragSortTable} from '@ant-design/pro-components';
 import {Button, message} from 'antd';
-import {SecurityMenu, SecurityMenuQuery} from "@/services/admin/typings";
+import {Menu, MenuQuery} from "@/services/admin/typings";
 import {createFromIconfontCN, PlusCircleFilled} from "@ant-design/icons";
 import React, {useEffect, useState} from "react";
 import {DomainService} from "@/services/admin/DomainService";
 import {BetaSchemaForm} from "@ant-design/pro-form";
 import Settings from "../../../../../config/defaultSettings";
-import {uiColumns} from "@/services/admin/UIService";
+import {UIService} from "@/services/admin/UIService";
 
 const Icon = createFromIconfontCN({scriptUrl: Settings.iconfontUrl});
 
@@ -22,31 +22,40 @@ const columnRenders = {
 export type MenuChildrenProps = {
     parentId: number;
     onDragSortEnd: () => void;
-    formRef: React.MutableRefObject<SecurityMenuQuery>;
+    formRef: React.MutableRefObject<MenuQuery>;
     actionRef: React.MutableRefObject<ActionType>;
-    securityMenuQuery: SecurityMenuQuery;
+    securityMenuQuery: MenuQuery;
 }
 
 
 const MenuChildren: React.FC<MenuChildrenProps> = (props) => {
 
-    const securityMenuService = new DomainService<SecurityMenu, SecurityMenuQuery>('security-menus');
+    const menuService = new DomainService<Menu, MenuQuery>('menus');
+    const uiService = new UIService('menu');
+
+    const [dragColumn] = useState<ProColumns>({
+        title: '排序',
+        dataIndex: 'sort',
+        width: '60',
+    });
 
     const [columns, setColumns] = useState<ProColumns[]>([]);
 
     useEffect(() => {
-        uiColumns('security-menus').then((res) => {
-            setColumns(res.data.map(({valueType, ...item}) => ({
+        uiService.columns().then((res) => {
+            let _columns: ProColumns[] = res.data.map(({valueType, ...item}) => ({
                 ...item,
                 render: valueType === 'icon' ? columnRenders[valueType] : undefined,
-            })));
+            }));
+            _columns.push(dragColumn);
+            setColumns(_columns);
         });
     }, [])
 
 
-    const handleDragSortEnd = (newDataSource: SecurityMenu[]) => {
+    const handleDragSortEnd = (newDataSource: Menu[]) => {
         console.log('排序后的数据', newDataSource);
-        securityMenuService.sort(newDataSource).then(() => {
+        menuService.sort(newDataSource).then(() => {
             props.actionRef.current?.reload();
             props.onDragSortEnd();
             message.success('修改列表排序成功');
@@ -55,7 +64,7 @@ const MenuChildren: React.FC<MenuChildrenProps> = (props) => {
 
     return (
         <>
-            <DragSortTable<SecurityMenu, SecurityMenuQuery>
+            <DragSortTable<Menu, MenuQuery>
                 headerTitle="子菜单"
                 columns={columns}
                 rowKey="id"
@@ -64,7 +73,7 @@ const MenuChildren: React.FC<MenuChildrenProps> = (props) => {
                 formRef={props.formRef}
                 actionRef={props.actionRef}
                 params={props.securityMenuQuery}
-                request={async (params, sort) => await securityMenuService.list(params, sort)}
+                request={async (params, sort) => await menuService.list(params, sort)}
                 onDragSortEnd={handleDragSortEnd}
                 search={false}
                 toolbar={{

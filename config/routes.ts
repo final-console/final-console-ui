@@ -11,44 +11,57 @@
  * @doc https://umijs.org/docs/guides/routes
  */
 export default [
-  {
-    path: '/user',
-    layout: false,
-    routes: [
-      {
-        name: 'login',
-        path: '/user/login',
-        component: './User/Login',
-      },
-    ],
-  },
-  {
-    path: '/welcome',
-    name: 'welcome',
-    icon: 'smile',
-    component: './Welcome',
-  },
-  {
-    path: '/setting',
-    name: 'setting',
-    icon: 'smile',
-    routes: [
-      {
-        path: '/setting/menu',
-        name: 'menu',
-        component: './Setting/Menu',
-        menuRender: false,
+    {
+        path: '/user',
         layout: false,
-      }
-    ]
-  },
-  {
-    path: '/',
-    redirect: '/welcome',
-  },
-  {
-    path: '*',
-    layout: false,
-    component: './404',
-  },
+        routes: [
+            {
+                name: 'login',
+                path: '/user/login',
+                component: './User/Login',
+            },
+        ],
+    },
+    {
+        path: '/welcome',
+        name: 'welcome',
+        icon: 'smile',
+        component: './Welcome',
+    },
+    {
+        path: '/setting',
+        name: 'setting',
+        icon: 'smile',
+        routes: [
+            {
+                path: '/setting/menu',
+                name: 'menu',
+                component: './Setting/Menu',
+                menuRender: false,
+                layout: false,
+            }
+        ]
+    }, {
+        path: '/data',
+        name: 'data',
+        icon: 'smile',
+        routes: [
+            {
+                path: '/data/table',
+                name: 'table',
+                component: './Data/Table',
+                menuRender: false,
+                layout: false,
+            }
+        ]
+    },
+    {
+        path: '/',
+        redirect: '/welcome',
+    },
+    {
+        path: '*',
+        layout: false,
+        component: './404',
+    },
 ];
