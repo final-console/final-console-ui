@@ -57,6 +57,7 @@ export default [
         name: 'domain-resources',
         icon: 'smile',
         hideSubInMenu: true,
+        hideChildrenInMenu: true,
         routes: [
             {
                 path: '/admin/domain-resources/:resource',
@@ -64,6 +65,7 @@ export default [
                 icon: 'smile',
                 component: './Admin/DomainEntity',
                 menuRender: false,
+                hideMenu: true,
             },
             {
                 path: '/admin/domain-resources',

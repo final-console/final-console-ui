@@ -87,7 +87,7 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
             request: async () => {
                 // initialState.currentUser 中包含了所有用户信息
                 const menuData = await adminMenus();
-                return loopMenuItem(menuData.data);
+                return menuData.data;
             },
         },
         footerRender: () => <Footer/>,
@@ -126,7 +126,7 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
                 </Link>,
             ]
             : [],
-        menuHeaderRender: undefined,
+        menuHeaderRender: false,
         // 自定义 403 页面
         // unAccessible: <div>unAccessible</div>,
         // 增加一个 loading 的状态
