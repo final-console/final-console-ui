@@ -10,21 +10,11 @@ import {errorConfig} from './requestErrorConfig';
 import {currentUser as queryCurrentUser} from './services/ant-design-pro/api';
 import React from 'react';
 import {AvatarDropdown, AvatarName} from './components/RightContent/AvatarDropdown';
-import {MenuDataItem} from "@ant-design/pro-layout";
 import {adminMenus} from "@/services/admin/AdminService";
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 
-
-const loopMenuItem = (menus: any[]): MenuDataItem[] =>
-    menus.map(({icon, routes, menuRender, ...item}) => ({
-        ...item,
-        icon: icon && ('icon-' + icon),
-        children: routes && loopMenuItem(routes),
-        menuRender: menuRender === false ? false : undefined,
-        layout: menuRender === false ? false : 'mix',
-    }));
 
 /**
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
