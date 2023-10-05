@@ -54,6 +54,24 @@ export default [
         ]
     },
     {
+        path: '/resources',
+        name: 'resources',
+        icon: 'smile',
+        routes: [
+            {
+                path: '/resources/domain-entities/:resource',
+                component: './Admin/DomainEntities',
+                menuRender: false,
+                layout: false,
+                hideInMenu: true,
+            },
+            {
+                path: '/resources/:resource',
+                component: './Admin/Resource',
+            },
+        ]
+    },
+    {
         path: '/data',
         name: 'data',
         icon: 'smile',

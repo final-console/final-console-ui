@@ -1,6 +1,6 @@
 import type {ActionType, DragTableProps, ParamsType, ProColumns, ProTableProps} from '@ant-design/pro-components';
 import {DragSortTable, EditableProTable, ProDescriptions, ProTable, TableDropdown} from '@ant-design/pro-components';
-import {Button, Drawer, message, Modal} from 'antd';
+import {Button, Drawer, message, Modal, Tooltip} from 'antd';
 import {Menu} from "@/services/admin/typings";
 import {createFromIconfontCN, ExclamationCircleFilled} from "@ant-design/icons";
 import React, {useEffect, useState} from "react";
@@ -8,6 +8,7 @@ import {DomainService} from "@/services/admin/DomainService";
 import {UIService} from "@/services/admin/UIService";
 import Settings from "../../../config/defaultSettings";
 import {DrawerForm} from "@/components/Form/DrawerForm";
+import {history} from "@umijs/max";
 
 const Icon = createFromIconfontCN({scriptUrl: Settings.iconfontUrl});
 
@@ -16,11 +17,23 @@ export enum SupperTableType {
     Table, DragSort, Editable
 }
 
+export type Action = {
+    key: string;
+    name: string;
+    type: string;
+    tips?: string;
+}
+
+export interface ColumnRender<T> {
+    render: (dom: React.ReactNode, entity: T, index: number, action: React.Ref<ActionType>, schema: ProColumns<T>) => React.ReactNode;
+}
+
 export type SupperTableProps<
     T extends Record<string, any>,
     Q extends ParamsType = ParamsType,
 > = {
-    resource: string;
+    resource?: string;
+    columnResource: string;
     tableType?: SupperTableType;
     onRowActionClick?: (key: string, row: T, action: React.Ref<ActionType>) => void;
     onDragSortEnd?: () => void;
@@ -33,6 +46,7 @@ function SupperTable<
 
     let {
         resource,
+        columnResource,
         actionRef,
         onRowActionClick,
         ...otherProps
@@ -47,7 +61,10 @@ function SupperTable<
     const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
     const [rowRecord, setRowRecord] = useState<T | undefined>(undefined);
 
-    const handleRowActionClick = (key: string, record: T, action: React.Ref<ActionType>) => {
+    // 行操作点击处理
+    const handleRowActionClick = (item: Action, record: T, action: React.Ref<ActionType>) => {
+
+        const key = item.key;
         if (key === 'view') {
             // 查询详情
             domainService.findById(record.id).then((res) => {
@@ -79,6 +96,18 @@ function SupperTable<
                     console.log('Cancel');
                 },
             });
+
+
+        }
+
+        if (item.type === 'router-replace') {
+            let routerString = "/resources/domain-entities/:resource";
+            let to = routerString.replace(/:([^/]+)/, (match, group) => {
+                return record[group] || match;
+            });
+            console.log("push", to)
+
+            history.replace(to);
         }
 
         if (onRowActionClick) {
@@ -86,54 +115,60 @@ function SupperTable<
         }
     }
 
-    const iconRender = (_, record) => {
-        return (<Icon type={'icon-' + record.icon}/>);
+    const iconRender: ColumnRender<T> = (dom, entity, index, action, schem) => {
+        return (<Icon type={'icon-' + entity.icon}/>);
     }
 
-    const actionRender = (_, record, action) => {
+    const actionRender: ColumnRender<T> = (dom, entity, index, action, schema) => {
 
-        let strings = [{
-            key: 'edit',
-            name: '编辑',
-            type: 'danger'
-        }, {
-            key: 'view',
-            name: '查看',
-            type: 'default'
-        }, {
-            key: 'delete',
-            name: '删除',
-            type: 'danger'
-        }];
+        console.log("schema", schema);
+
+        const dropdownSize = 5;
+
+        let strings = schema.actions as Action[] | [];
 
         let actions = [];
 
-        let links = strings.length >= 2 ? strings.slice(0, 2) : strings;
+        let links = strings.length >= dropdownSize ? strings.slice(0, dropdownSize) : strings;
 
         // 生成操作链接
         links.forEach((item) => {
-            actions.push(<a
-                key={item.key}
-                onClick={() => {
-                    handleRowActionClick(item.key, record, action);
-
-                }}
-            >
-                {item.name}
-            </a>)
+            actions.push(
+                <Tooltip key={item.key} title={item.tips ? item.tips : item.name}>
+                    <a
+                        onClick={() => {
+                            handleRowActionClick(item, entity, action);
+                        }}
+                    >
+                        {item.name}
+                    </a>
+                </Tooltip>
+            )
         });
 
-        if (strings.length > 2) {
+        if (strings.length > dropdownSize) {
+
+            let dropdowns = strings.slice(dropdownSize);
+            // 把dropdowns转换成以key为key的对象
+
+            const dropdownMap = dropdowns.reduce((acc, item) => {
+                acc[item.key] = item;
+                return acc;
+            }, {});
+
+            console.log("下拉对象", dropdownMap);
 
             actions.push(<TableDropdown
                 key="actionGroup"
-                onSelect={(key) => handleRowActionClick(key, record, action)}
-                menus={strings.slice(2)}
+                onSelect={(key) => {
+                    handleRowActionClick(dropdownMap[key], entity, action);
+                }}
+                menus={dropdowns}
             />)
         }
 
 
-        console.log("action", record)
+        console.log("action", entity)
         return actions;
     }
 
@@ -143,7 +178,7 @@ function SupperTable<
     };
 
 
-    const uiService = new UIService(resource);
+    const uiService = new UIService(columnResource ? columnResource : resource);
 
     const [columns, setColumns] = useState<ProColumns[]>([]);
 
@@ -153,7 +188,9 @@ function SupperTable<
         domainService.sort(newDataSource).then(() => {
             console.log("actionRef", actionRef);
             actionRef?.current?.reload();
-            props?.onDragSortEnd();
+            if (props?.onDragSortEnd) {
+                props.onDragSortEnd();
+            }
             message.success('修改列表排序成功');
         });
     };
