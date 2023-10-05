@@ -115,11 +115,11 @@ function SupperTable<
         }
     }
 
-    const iconRender: ColumnRender<T> = (dom, entity, index, action, schem) => {
+    const iconRender = (dom, entity, index, action, schem) => {
         return (<Icon type={'icon-' + entity.icon}/>);
     }
 
-    const actionRender: ColumnRender<T> = (dom, entity, index, action, schema) => {
+    const actionRender = (dom, entity, index, action, schema) => {
 
         console.log("schema", schema);
 

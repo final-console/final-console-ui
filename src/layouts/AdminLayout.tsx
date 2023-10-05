@@ -32,10 +32,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = (props) => {
 
     return (
         <ProLayout
-            title={props.title}
-            logo={props.logo}
+            {...props}
             collapsedButtonRender={false}
-            fixSiderbar={true}
             actionRef={props.actionRef}
             iconfontUrl={Settings.iconfontUrl}
             onMenuHeaderClick={() => history.back()}

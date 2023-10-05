@@ -29,46 +29,46 @@ export default [
         component: './Welcome',
     },
     {
-        path: '/setting',
+        path: '/admin/setting',
         name: 'setting',
         icon: 'smile',
         routes: [
             {
-                path: '/setting/menu',
+                path: '/admin/setting/menu',
                 name: 'menu',
                 component: './Setting/Menu',
                 menuRender: false,
-                layout: false,
             }
         ]
     },
     {
-        path: '/security',
+        path: '/admin/security',
         name: 'security',
         icon: 'smile',
         routes: [
             {
-                path: '/security/:resources',
+                path: '/admin/security/:resources',
                 component: './Admin/Resource',
             },
         ]
     },
     {
-        path: '/resources',
-        name: 'resources',
+        path: '/admin/domain-resources',
+        name: 'domain-resources',
         icon: 'smile',
+        hideSubInMenu: true,
         routes: [
             {
-                path: '/resources/domain-entities/:resource',
-                component: './Admin/DomainEntities',
+                path: '/admin/domain-resources/:resource',
+                name: 'domain-resources',
+                icon: 'smile',
+                component: './Admin/DomainEntity',
                 menuRender: false,
-                layout: false,
-                hideInMenu: true,
             },
             {
-                path: '/resources/:resource',
-                component: './Admin/Resource',
-            },
+                path: '/admin/domain-resources',
+                redirect: '/admin/domain-resources/domain-entities',
+            }
         ]
     },
     {
