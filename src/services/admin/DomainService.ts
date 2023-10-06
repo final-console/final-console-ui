@@ -1,5 +1,6 @@
 import {request} from 'umi';
 import {Entity, Query, Result} from "@/services/admin/typings";
+import qs from "qs";
 
 export class DomainService<T extends Entity, Q extends Query> {
     private readonly resource: string;
@@ -79,6 +80,13 @@ export class DomainService<T extends Entity, Q extends Query> {
         return request<Result<number>>(`/api/${this.resource}`, {
             method: 'POST',
             data: data,
+        });
+    }
+
+    yn(id: number | string, yn: number) {
+        return request<Result<number>>(`/api/${this.resource}/${id}/yn`, {
+            method: 'PATCH',
+            data: qs.stringify({yn}),
         });
     }
 }

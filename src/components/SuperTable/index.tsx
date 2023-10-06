@@ -22,6 +22,7 @@ export type Action = {
     name: string;
     type: string;
     tips?: string;
+    eval?: string;
 }
 
 export interface ColumnRender<T> {
@@ -97,6 +98,41 @@ function SupperTable<
                 },
             });
 
+        } else if (key === 'enable') {
+            // 启用
+            const {confirm} = Modal;
+
+            confirm({
+                title: '您确认要启用该条目吗？',
+                icon: <ExclamationCircleFilled/>,
+                onOk() {
+                    domainService.yn(record.id, 1).then(() => {
+                        actionRef?.current?.reload();
+                        message.success('启用成功');
+                    });
+                },
+                onCancel() {
+                    console.log('Cancel');
+                },
+            });
+
+        } else if (key === 'disable') {
+            // 禁用
+            const {confirm} = Modal;
+
+            confirm({
+                title: '您确认要禁用该条目吗？',
+                icon: <ExclamationCircleFilled/>,
+                onOk() {
+                    domainService.yn(record.id, 0).then(() => {
+                        actionRef?.current?.reload();
+                        message.success('禁用成功');
+                    });
+                },
+                onCancel() {
+                    console.log('Cancel');
+                },
+            });
 
         }
 
@@ -126,6 +162,22 @@ function SupperTable<
         const dropdownSize = 5;
 
         let strings = schema.actions as Action[] | [];
+
+        // 过滤可以显示的操作
+        strings = strings.filter((item) => {
+
+            if (!item.eval) {
+                return true;
+            }
+            console.debug(item.eval, eval(item.eval));
+
+            return eval(item.eval) === true;
+
+
+        })
+
+        console.log("过滤后的操作", strings);
+
 
         let actions = [];
 
