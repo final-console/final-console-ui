@@ -1,7 +1,7 @@
 import {request} from "@@/exports";
-import {ProColumns} from "@ant-design/pro-components";
 import {Query, Result} from "@/services/admin/typings";
 import {MenuDataItem} from "@ant-design/pro-layout";
+import {Columns} from "@/services/admin/antd.typings";
 
 
 export class UIService {
@@ -46,7 +46,7 @@ export class UIService {
 
     columns(params?: Query, options?: { [key: string]: any },) {
         return request<{
-            data: ProColumns[];
+            data: Columns[];
             /** 列表的内容总数 */
             total?: number;
             success?: boolean;
@@ -63,26 +63,3 @@ export class UIService {
 
 }
 
-export async function uiColumns(
-    resource: string,
-    params?: {
-        /** 当前的页码 */
-        current?: number;
-        /** 页面的容量 */
-        pageSize?: number;
-    },
-    options?: { [key: string]: any },
-) {
-    return request<{
-        data: ProColumns[];
-        /** 列表的内容总数 */
-        total?: number;
-        success?: boolean;
-    }>(`/api/ui/${resource}/columns`, {
-        method: 'GET',
-        params: {
-            ...params,
-        },
-        ...(options || {}),
-    });
-}

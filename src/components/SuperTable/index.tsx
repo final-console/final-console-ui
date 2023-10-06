@@ -255,12 +255,12 @@ function SupperTable<
         uiService.columns().then((res) => {
             console.log(JSON.stringify(res.data));
 
-            let _columns: ProColumns[] = res.data.map(({valueType, defaultSortOrder, ...item}) => ({
+            let _columns: ProColumns[] = res.data.map(({valueType, tooltip, ...item}) => ({
                 ...item,
                 valueType: valueType,
-                defaultSortOrder: defaultSortOrder?.toLowerCase(),
+                tooltip: tooltip ? {title: tooltip.title, icon: tooltip.icon ? <Icon type={tooltip.icon}/> : undefined} : undefined,
                 render: columnRenders[valueType],
-            }));
+            } as ProColumns));
 
             setColumns(_columns);
             // 首次请求
