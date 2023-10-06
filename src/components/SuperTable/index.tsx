@@ -259,6 +259,11 @@ function SupperTable<
                 ...item,
                 valueType: valueType,
                 tooltip: tooltip ? {title: tooltip.title, icon: tooltip.icon ? <Icon type={tooltip.icon}/> : undefined} : undefined,
+                onFilter: true,
+                onFilter1: (value, record) => {
+                    console.log("onFilter", value, record);
+                    return false;
+                },
                 render: columnRenders[valueType],
             } as ProColumns));
 
