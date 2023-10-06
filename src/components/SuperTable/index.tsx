@@ -48,14 +48,13 @@ function SupperTable<
     let {
         resource,
         columnResource,
-        actionRef,
         onRowActionClick,
         ...otherProps
     } = props;
 
     const domainService = new DomainService<T, Q>(resource);
 
-
+    const [actionRef] = useState<React.Ref<ActionType>>(props.actionRef);
     const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
     const [viewDrawerVisible, setViewDrawerVisible] = useState<boolean>(false);
     const [editDrawerVisible, setEditDrawerVisible] = useState<boolean>(false);
