@@ -296,7 +296,6 @@ function SupperTable<
                         message.success('创建成功');
                     });
                 }}
-
                 onClose={() => setCreateModalVisible(false)}
                 drawerProps={{
                     // 重置表单
@@ -314,7 +313,6 @@ function SupperTable<
                 && <ProTable {...props}
                              manualRequest={true}
                              columns={columns} request={request}
-
                              toolbar={toolbar}
                 />
             }
@@ -328,11 +326,13 @@ function SupperTable<
                                   params={props.params}
                                   request={request}
                                   toolbar={toolbar}
+                                  manualRequest={true}
                 />}
             {
                 props.tableType === SupperTableType.Editable
                 && <EditableProTable {...props} columns={columns}
                                      toolbar={toolbar}
+                                     manualRequest={true}
                                      request={request}/>
             }
 
