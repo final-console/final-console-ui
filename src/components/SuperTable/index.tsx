@@ -3,7 +3,7 @@ import {DragSortTable, EditableProTable, ProDescriptions, ProTable, TableDropdow
 import {Button, Drawer, message, Modal, Tooltip} from 'antd';
 import {Menu} from "@/services/admin/typings";
 import {createFromIconfontCN, ExclamationCircleFilled} from "@ant-design/icons";
-import React, {useEffect, useState} from "react";
+import React, {createRef, useEffect, useState} from "react";
 import {DomainService} from "@/services/admin/DomainService";
 import {UIService} from "@/services/admin/UIService";
 import Settings from "../../../config/defaultSettings";
@@ -54,7 +54,7 @@ function SupperTable<
 
     const domainService = new DomainService<T, Q>(resource);
 
-    const [actionRef] = useState<React.Ref<ActionType>>(props.actionRef);
+    const actionRef = createRef<Action>();
     const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
     const [viewDrawerVisible, setViewDrawerVisible] = useState<boolean>(false);
     const [editDrawerVisible, setEditDrawerVisible] = useState<boolean>(false);
@@ -319,6 +319,7 @@ function SupperTable<
                 props.tableType === SupperTableType.DragSort
                 && <DragSortTable {...props}
                                   onDragSortEnd={onDragSortEnd}
+                                  actionRef={actionRef}
                                   rowKey={'id'}
                                   columns={columns}
                                   dragSortKey="sort"

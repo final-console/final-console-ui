@@ -1,6 +1,6 @@
 import Footer from '@/components/Footer';
 import {Question, SelectLang, Setting} from '@/components/RightContent';
-import {LinkOutlined} from '@ant-design/icons';
+import {CommentOutlined, LinkOutlined, SettingOutlined} from '@ant-design/icons';
 import type {Settings as LayoutSettings} from '@ant-design/pro-components';
 import {SettingDrawer} from '@ant-design/pro-components';
 import type {RunTimeLayoutConfig} from '@umijs/max';
@@ -8,9 +8,10 @@ import {history, Link, RequestConfig} from '@umijs/max';
 import defaultSettings from '../config/defaultSettings';
 import {errorConfig} from './requestErrorConfig';
 import {currentUser as queryCurrentUser} from './services/ant-design-pro/api';
-import React from 'react';
+import React, {useState} from 'react';
 import {AvatarDropdown, AvatarName} from './components/RightContent/AvatarDropdown';
 import {adminMenus} from "@/services/admin/AdminService";
+import {FloatButton} from 'antd';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -58,6 +59,13 @@ export async function getInitialState(): Promise<{
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => {
+
+    const [open, setOpen] = useState<boolean>(true);
+
+    const onChange = (checked: boolean) => {
+        setOpen(checked);
+    };
+
     return {
         actionsRender: () => [<Question key="doc"/>, <SelectLang key="SelectLang"/>, <Setting key="setting"/>],
         avatarProps: {
@@ -88,6 +96,11 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
                 history.push(loginPath);
             }
         },
+        openKeys: false,
+        onOpenChange: (openKeys) => {
+            console.log("onOpenChange", openKeys)
+        },
+        locale: false,
         layoutBgImgList: [
             {
                 src: 'https://mdn.alipayobjects.com/yuyan_qk0oxh/afts/img/D2LWSqNny4sAAAAAAAAAAAAAFl94AQBr',
@@ -122,10 +135,19 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
         // 增加一个 loading 的状态
         childrenRender: (children) => {
             // if (initialState?.loading) return <PageLoading />;
-
             return (
                 <>
                     {children}
+                    <FloatButton.Group
+                        trigger="hover"
+                        type="primary"
+                        style={{right: 24}}
+                        icon={<SettingOutlined/>}
+                    >
+                        <FloatButton/>
+                        <FloatButton icon={<CommentOutlined/>}/>
+                    </FloatButton.Group>
+                    {/*<Switch onChange={onChange} checked={open} style={{margin: 16}}/>*/}
                     <SettingDrawer
                         disableUrlParams
                         enableDarkTheme

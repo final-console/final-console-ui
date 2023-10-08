@@ -37,7 +37,6 @@ export default [
                 path: '/admin/setting/menu',
                 name: 'menu',
                 component: './Setting/Menu',
-                menuRender: false,
             }
         ]
     },

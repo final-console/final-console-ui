@@ -1,75 +1,56 @@
-import React, {useRef, useState} from "react";
-import {ActionType, PageContainer, ProFormInstance} from "@ant-design/pro-components";
-import {MenuQuery} from "@/services/admin/typings";
-import Settings from "../../../../config/defaultSettings";
+import React, {useState} from 'react';
 import AdminLayout from "@/layouts/AdminLayout";
-import SupperTable, {SupperTableType} from "@/components/SuperTable";
+import {ActionType, PageContainer, ProColumns, ProDescriptions} from "@ant-design/pro-components";
+import SuperTable, {SupperTableType} from "@/components/SuperTable";
+import {Menu, MenuQuery} from "@/services/admin/typings";
 
-export default () => {
+const SuperAdminLayout = () => {
 
-    const layoutActionRef = useRef<ActionType>();
-    const menuChildrenActionRef = useRef<ActionType>();
-    const menuChildrenFormRef = useRef<ProFormInstance<MenuQuery>>();
-    const [menuQuery, setMenuQuery] = useState({parentId: -1, orders: 'sortValue asc'});
+    const [menuQuery, setMenuQuery] = useState<MenuQuery>({parentId: -1, orders: 'sortValue'});
+    const layoutActionRef = React.useRef<ActionType>();
+    const actionRef = React.useRef<ActionType>();
 
-    const tabs = [
+    const descriptionsColumns: ProColumns[] = [
         {
-            key: 'menus',
-            tab: '子菜单',
-            children: <SupperTable
-                parentId={-1}
-                resource='menus'
-                tableType={SupperTableType.DragSort}
-                search={false}
-                pagination={false}
-                manualRequest={true}
-                formRef={menuChildrenFormRef}
-                actionRef={menuChildrenActionRef}
-                params={menuQuery}
-                onDragSortEnd={() => layoutActionRef.current?.reload()}/>
-        },
-        {
-            key: 'authorities', tab: '权限',
-            children: <SupperTable
-                resource='authorities'
-                tableType={SupperTableType.DragSort}
-                search={false}
-            />
-        },
+            title: '名称',
+            dataIndex: 'name',
+            valueType: 'text',
+        }
     ];
 
-    const [tab, setTab] = useState<string>('menus');
 
     return (
         <AdminLayout
-            title="菜单设置"
-            logo={"https://th.bing.com/th/id/R.c3ec64ad2cc5dbe33e74b212dc1b655b?rik=2iSUEjTG8e%2balA&riu=http%3a%2f%2fpic.616pic.com%2fys_b_img%2f00%2f15%2f34%2fMgf5DOge2w.jpg&ehk=YJ4I33FCI9wOYNRi%2bx%2fqT%2fvMy5cTmmq9hN5yX%2bwsEsc%3d&risl=&pid=ImgRaw&r=0&sres=1&sresct=1"}
             resource={'menu'}
-            collapsedButtonRender={false}
-            fixSiderbar={true}
             actionRef={layoutActionRef}
-            iconfontUrl={Settings.iconfontUrl}
-            pathname={'/'}
-            onMenuHeaderClick={() => history.back()}
             onMenuClick={(item) => {
-                console.log(JSON.stringify(item));
-                let parentId = parseInt(item.key || '-1');
-
-                if (parentId !== -1) {
-                    parentId = Math.abs(parentId);
-                }
-
-                menuChildrenActionRef.current?.reload();
-                setMenuQuery({parentId: parentId});
-                // menuChildrenFormRef.current?.setFieldValue('parentId', parseInt(item.key || '-1'));
+                console.log(item);
+                setMenuQuery({...menuQuery, parentId: parseInt(item.key || '-1')})
             }}
+
+            // 其他配置...
         >
             <PageContainer
-                tabList={tabs}
-                tabActiveKey={tab}
-                onTabChange={setTab}
+                content={
+                    <ProDescriptions
+                        columns={descriptionsColumns}
+                    />
+                }
             >
+                <SuperTable<Menu, MenuQuery>
+                    actionRef={actionRef}
+                    columnResource={'menus'}
+                    resource={'menus'}
+                    params={menuQuery}
+                    search={false}
+                    tableType={SupperTableType.DragSort}
+                    onDragSortEnd={() => {
+                        layoutActionRef.current?.reload();
+                    }}
+                />
             </PageContainer>
         </AdminLayout>
     );
 }
+
+export default SuperAdminLayout;

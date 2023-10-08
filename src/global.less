@@ -17,6 +17,53 @@ body,
   min-height: 100vh;
 }
 
+.ant-page-header {
+  z-index: 1;
+}
+
+.ant-layout .ant-menu-submenu.ant-menu-submenu-selected:not(:has(.ant-menu-item-selected)) > .ant-menu-submenu-title {
+  //color: red;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.ant-layout .ant-menu-submenu.ant-menu-submenu-selected:has(.ant-menu-submenu-selected) > .ant-menu-submenu-title {
+  //color: black !important;
+  background-color: transparent;
+}
+
+.ant-menu-submenu.ant-menu-submenu-selected:not(:has(.ant-menu-item-selected)) > .ant-menu-submenu-title .ant-pro-base-menu-inline-item-text {
+  //color: red;
+}
+
+.ant-menu-submenu.ant-menu-submenu-selected:has(.ant-menu-submenu-selected) > .ant-menu-submenu-title .ant-pro-base-menu-inline-item-text {
+  //color: black !important;
+}
+
+.antd-tree-menu {
+  border: 1px solid red;
+}
+
+.antd-tree-menu .ant-tree-treenode {
+  display: flex;
+  align-items: center;
+  transition: border-color 0.3s, background 0.3s, padding 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
+  height: 40px !important;
+}
+
+.ant-layout .ant-layout-sider .ant-tree {
+  background-color: transparent;
+  line-height: 40px;
+}
+
+.antd-tree-menu .ant-tree .ant-tree-node-content-wrapper {
+  //background-color: #F6F5F6;
+  line-height: 40px;
+  height: 40px;
+  display: flex;
+  align-content: center;
+  user-select: none;
+}
+
 .ant-pro-sider.ant-layout-sider.ant-pro-sider-fixed {
   left: unset;
 }
