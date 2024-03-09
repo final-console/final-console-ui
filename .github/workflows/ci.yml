@@ -12,6 +12,10 @@ on:
     types:
       - published
 
+env:
+  namespace: ifinal
+  organization: final-apps
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -54,14 +58,16 @@ jobs:
             ${{ secrets.DOCKER_REGISTRY }}/${{ env.organization }}/${{ env.app }}:${{ env.VERSION }}
       - name: 部署
         uses: final-actions/kuboard-cicd@main
+        env:
+          app: final-console-ui
         with:
           host: ${{ secrets.KUBOARD_HOST }}
           username: ${{ secrets.KUBOARD_USERNAME }}
           access-key: ${{ secrets.KUBOARD_ACCESS_KEY }}
           cluster: default
-          namespace: ifinal
-          app-name: final-console-ui
-          image: ${{ env.IMAGE }}
+          namespace: ${{ env.namespace }}
+          app-name: ${{ env.app }}
+          image: ${{ secrets.DOCKER_REGISTRY }}/${{ env.organization }}/${{ env.app }}
           version: ${{ env.VERSION }}
 
 
