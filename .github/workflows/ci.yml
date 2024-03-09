@@ -33,15 +33,25 @@ jobs:
         run: npm install
       - name: 构建
         run: npm run build
-      - name: 构建Docker镜像
-        uses: final-actions/docker@main
+      - name: 登录Docker镜像源
+        uses: docker/login-action@v3
         with:
           registry: ${{ secrets.DOCKER_REGISTRY }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          app-name: ${{ env.APP_NAME }}
-          version: ${{ env.VERSION }}
-          image: ${{ env.IMAGE }}
+      # 部署 final-sso-app
+      - name: final-sso-app
+        run: echo "final-sso-app"
+      - name: Docker Build And Push
+        uses: docker/build-push-action@v5
+        env:
+          app: final-console-ui
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_REGISTRY }}/${{ env.organization }}/${{ env.app }}:latest
+            ${{ secrets.DOCKER_REGISTRY }}/${{ env.organization }}/${{ env.app }}:${{ env.VERSION }}
       - name: 部署
         uses: final-actions/kuboard-cicd@main
         with:
@@ -50,7 +60,7 @@ jobs:
           access-key: ${{ secrets.KUBOARD_ACCESS_KEY }}
           cluster: default
           namespace: ifinal
-          app-name: final-admin-ui
+          app-name: final-console-ui
           image: ${{ env.IMAGE }}
           version: ${{ env.VERSION }}
 
